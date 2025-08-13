@@ -1,0 +1,78 @@
+name: kensei_tunnel
+description: A fully functional cross-platform VPN client powered by Sing-box
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI and Material Design
+  cupertino_icons: ^1.0.6
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Networking and HTTP
+  http: ^1.1.2
+  dio: ^5.4.0
+  connectivity_plus: ^5.0.2
+  
+  # Database and Storage
+  sqflite: ^2.3.0
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.1
+  
+  # Cryptography and Security
+  crypto: ^3.0.3
+  pointycastle: ^3.7.3
+  
+  # FFI and Native Integration
+  ffi: ^2.1.0
+  
+  # JSON and Serialization
+  json_annotation: ^4.8.1
+  
+  # Utilities
+  uuid: ^4.2.1
+  intl: ^0.19.0
+  path: ^1.8.3
+  
+  # Platform Integration
+  permission_handler: ^11.1.0
+  device_info_plus: ^9.1.1
+  package_info_plus: ^4.2.0
+  
+  # File Operations
+  file_picker: ^10.3.1
+  
+  # Logging
+  logger: ^2.0.2+1
+  
+  # Charts and Visualization
+  fl_chart: ^0.65.0
+  
+  # QR Code
+  qr_flutter: ^4.1.0
+  
+  # URL Launcher
+  url_launcher: ^6.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Linting
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/configs/
