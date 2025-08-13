@@ -22,6 +22,8 @@ class VPNConfig {
   final DateTime createdAt;
   final DateTime? lastConnected;
   final bool isActive;
+  final bool killSwitchEnabled;
+  final bool alwaysOnEnabled;
 
   VPNConfig({
     required this.id,
@@ -49,7 +51,9 @@ class VPNConfig {
       lastConnected: json['lastConnected'] != null
           ? DateTime.parse(json['lastConnected'])
           : null,
-      isActive: json['isActive'] ?? false,
+      isActive: json["isActive"] ?? false,
+      killSwitchEnabled: json["killSwitchEnabled"] ?? false,
+      alwaysOnEnabled: json["alwaysOnEnabled"] ?? false,
     );
   }
 
@@ -64,6 +68,8 @@ class VPNConfig {
       'createdAt': createdAt.toIso8601String(),
       'lastConnected': lastConnected?.toIso8601String(),
       'isActive': isActive,
+      'killSwitchEnabled': killSwitchEnabled,
+      'alwaysOnEnabled': alwaysOnEnabled,
     };
   }
 
@@ -77,6 +83,8 @@ class VPNConfig {
     DateTime? createdAt,
     DateTime? lastConnected,
     bool? isActive,
+    bool? killSwitchEnabled,
+    bool? alwaysOnEnabled,
   }) {
     return VPNConfig(
       id: id ?? this.id,
@@ -88,6 +96,8 @@ class VPNConfig {
       createdAt: createdAt ?? this.createdAt,
       lastConnected: lastConnected ?? this.lastConnected,
       isActive: isActive ?? this.isActive,
+      killSwitchEnabled: killSwitchEnabled ?? this.killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled ?? this.alwaysOnEnabled,
     );
   }
 

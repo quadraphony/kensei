@@ -56,10 +56,13 @@ class VPNService {
       
       _log('Connection attempt: $result');
       
-      if (result.contains('successfully')) {
+      if (result.contains("successfully")) {
         _updateState(VPNConnectionState.connected);
         _startStatsTimer();
-        _log('Connected to ${config.name} (${config.displayAddress})');
+        if (config.alwaysOnEnabled) {
+          _startReconnectTimer();
+        }
+        _log("Connected to ${config.name} (${config.displayAddress})");
         return true;
       } else {
         _updateState(VPNConnectionState.error);
@@ -185,7 +188,9 @@ class VPNService {
           "inet4_address": "172.19.0.1/30",
           "auto_route": true,
           "strict_route": false,
-          "sniff": true
+          "sniff": true,
+          "auto_redirect": config.killSwitchEnabled,
+          "auto_redirect_url": "http://localhost:8080/killswitch"
         }
       ],
       "outbounds": [
@@ -407,4 +412,22 @@ class VPNService {
     _reconnectTimer?.cancel();
   }
 }
+
+
+
+  void _startReconnectTimer() {
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+      if (_connectionState != VPNConnectionState.connected) {
+        _log("Always-on VPN: Connection lost, attempting to reconnect...");
+        await reconnect();
+      }
+    });
+  }
+
+  void _stopReconnectTimer() {
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+  }
+
 
