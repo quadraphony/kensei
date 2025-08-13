@@ -482,3 +482,48 @@ class ProfileService {
   }
 }
 
+
+
+  VPNConfig? parseConfigString(String configString) {
+    try {
+      // Attempt to decode as JSON first
+      final decoded = jsonDecode(configString);
+      if (decoded is Map<String, dynamic>) {
+        return _parseSubscriptionConfig(decoded);
+      } else if (decoded is List<dynamic>) {
+        // If it's a list, try to parse the first element
+        if (decoded.isNotEmpty && decoded[0] is Map<String, dynamic>) {
+          return _parseSubscriptionConfig(decoded[0]);
+        }
+      }
+    } catch (e) {
+      // Not a direct JSON, try base64 decoding
+      try {
+        final decodedBase64 = _decodeBase64(configString);
+        final decoded = jsonDecode(decodedBase64);
+        if (decoded is Map<String, dynamic>) {
+          return _parseSubscriptionConfig(decoded);
+        } else if (decoded is List<dynamic>) {
+          if (decoded.isNotEmpty && decoded[0] is Map<String, dynamic>) {
+            return _parseSubscriptionConfig(decoded[0]);
+          }
+        }
+      } catch (e2) {
+        print("Could not parse as JSON or Base64: $e2");
+      }
+    }
+
+    // Attempt to parse as URI (e.g., vmess://, ss://)
+    // This part would require a more sophisticated URI parser
+    // For now, we'll just return null if it's not JSON or Base64
+    return null;
+  }
+
+
+
+
+  String _decodeBase64(String encoded) {
+    return utf8.decode(base64Url.decode(base64Url.normalize(encoded)));
+  }
+
+

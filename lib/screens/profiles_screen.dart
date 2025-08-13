@@ -175,6 +175,16 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               ),
             ),
             const PopupMenuItem(
+              value: 'share',
+              child: Row(
+                children: [
+                  Icon(Icons.share),
+                  SizedBox(width: 8),
+                  Text('Share'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
               value: 'delete',
               child: Row(
                 children: [
@@ -244,6 +254,9 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         break;
       case 'duplicate':
         _duplicateProfile(profile);
+        break;
+      case 'share':
+        _shareProfile(profile);
         break;
       case 'delete':
         _deleteProfile(profile);
@@ -438,4 +451,16 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     }
   }
 }
+
+
+
+  void _shareProfile(VPNConfig profile) {
+    // For now, we'll just show a snackbar with the profile's JSON string.
+    // In a real app, you'd generate a shareable link or QR code.
+    final profileJson = profile.toJson();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Share this profile: ${profileJson.toString()}')),
+    );
+  }
+
 

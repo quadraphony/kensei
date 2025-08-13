@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/vpn_config.dart';
 import '../services/profile_service.dart';
 
@@ -153,6 +154,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
       appBar: AppBar(
         title: Text(widget.editingProfile != null ? 'Edit Profile' : 'Add Profile'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.content_paste),
+            onPressed: _pasteFromClipboard,
+            tooltip: 'Paste from Clipboard',
+          ),
           TextButton(
             onPressed: _saveProfile,
             child: const Text('Save'),
@@ -1004,3 +1010,89 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   }
 }
 
+
+
+  Future<void> _pasteFromClipboard() async {
+    final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+    if (clipboardData != null && clipboardData.text != null) {
+      final pastedText = clipboardData.text!;
+      final parsedConfig = _profileService.parseConfigString(pastedText);
+      if (parsedConfig != null) {
+        setState(() {
+          _selectedProtocol = parsedConfig.protocol;
+          _nameController.text = parsedConfig.name;
+          _serverController.text = parsedConfig.server;
+          _portController.text = parsedConfig.port.toString();
+          // Populate other fields based on protocol
+          switch (parsedConfig.protocol) {
+            case VPNProtocol.vmess:
+              final config = VMessConfig.fromJson(parsedConfig.config);
+              _vmessUuidController.text = config.uuid;
+              _vmessSecurityController.text = config.security;
+              _vmessAlterIdController.text = config.alterId.toString();
+              _vmessNetworkController.text = config.network;
+              _vmessPathController.text = config.path;
+              _vmessHostController.text = config.host;
+              _vmessSniController.text = config.sni;
+              _vmessTls = config.tls;
+              break;
+            case VPNProtocol.trojan:
+              final config = TrojanConfig.fromJson(parsedConfig.config);
+              _trojanPasswordController.text = config.password;
+              _trojanSniController.text = config.sni;
+              _trojanNetworkController.text = config.network;
+              _trojanPathController.text = config.path;
+              _trojanHostController.text = config.host;
+              break;
+            case VPNProtocol.vless:
+              final config = VLESSConfig.fromJson(parsedConfig.config);
+              _vlessUuidController.text = config.uuid;
+              _vlessFlowController.text = config.flow;
+              _vlessSecurityController.text = config.security;
+              _vlessSniController.text = config.sni;
+              _vlessNetworkController.text = config.network;
+              _vlessPathController.text = config.path;
+              _vlessHostController.text = config.host;
+              break;
+            case VPNProtocol.shadowsocks:
+              final config = ShadowsocksConfig.fromJson(parsedConfig.config);
+              _ssMethodController.text = config.method;
+              _ssPasswordController.text = config.password;
+              _ssPluginController.text = config.plugin;
+              _ssPluginOptsController.text = config.pluginOpts;
+              break;
+            case VPNProtocol.wireguard:
+              final config = WireGuardConfig.fromJson(parsedConfig.config);
+              _wgPrivateKeyController.text = config.privateKey;
+              _wgPeerPublicKeyController.text = config.peerPublicKey;
+              _wgLocalAddressController.text = config.localAddress.join(\", \");
+              _wgMtuController.text = config.mtu.toString();
+              break;
+            case VPNProtocol.tuic:
+              final config = TUICConfig.fromJson(parsedConfig.config);
+              _tuicUuidController.text = config.uuid;
+              _tuicPasswordController.text = config.password;
+              _tuicAlpnController.text = config.alpn;
+              _tuicSniController.text = config.sni;
+              break;
+            case VPNProtocol.hysteria:
+              final config = HysteriaConfig.fromJson(parsedConfig.config);
+              _hysteriaAuthController.text = config.auth;
+              _hysteriaAlpnController.text = config.alpn;
+              _hysteriaSniController.text = config.sni;
+              _hysteriaObfsController.text = config.obfs;
+              break;
+            default:
+              break;
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Profile parsed and loaded!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Could not parse clipboard content as a VPN profile.")),
+        );
+      }
+    }
+  }
