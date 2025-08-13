@@ -41,6 +41,13 @@ class ProfileService {
     }
   }
 
+  String _generateId() {
+    final random = Random();
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return String.fromCharCodes(Iterable.generate(
+        16, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  }
+
   Future<String> addProfile({
     required String name,
     required VPNProtocol protocol,
@@ -499,124 +506,6 @@ class ProfileService {
   Future<File> _getSubscriptionsFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/kensei_tunnel_subscriptions.json');
-
-  VPNConfig? _parseSubscriptionConfig(Map<String, dynamic> configData) {
-    try {
-      final type = configData["type"] as String?;
-      if (type == null) return null;
-
-      VPNProtocol? protocol;
-      switch (type.toLowerCase()) {
-        case "vmess":
-          protocol = VPNProtocol.vmess;
-          break;
-        case "trojan":
-          protocol = VPNProtocol.trojan;
-          break;
-        case "vless":
-          protocol = VPNProtocol.vless;
-          break;
-        case "shadowsocks":
-          protocol = VPNProtocol.shadowsocks;
-          break;
-        case "wireguard":
-          protocol = VPNProtocol.wireguard;
-          break;
-        case "tuic":
-          protocol = VPNProtocol.tuic;
-          break;
-        case "hysteria":
-          protocol = VPNProtocol.hysteria;
-          break;
-        default:
-          return null;
-      }
-
-      final server = configData["server"] as String?;
-      final port = configData["server_port"];
-      final tag = configData["tag"] as String? ?? "Unknown";
-
-      if (server == null || port == null) return null;
-
-      final portInt = port is String ? int.tryParse(port) : port as int?;
-      if (portInt == null) return null;
-
-      return VPNConfig(
-        id: _generateId(),
-        name: tag,
-        protocol: protocol,
-        server: server,
-        port: portInt,
-        config: configData,
-        createdAt: DateTime.now(),
-      );
-    } catch (e) {
-      print("Error parsing config: $e");
-      return null;
-    }
-  }
-
-  // Helper for parsing config strings (e.g., from QR codes or clipboard)
-  VPNConfig? parseConfigString(String configString) {
-    try {
-      // Attempt to decode as JSON first
-      final decoded = jsonDecode(configString);
-      if (decoded is Map<String, dynamic>) {
-        return _parseSubscriptionConfig(decoded);
-      } else if (decoded is List<dynamic>) {
-        // If it's a list, try to parse the first element
-        if (decoded.isNotEmpty && decoded[0] is Map<String, dynamic>) {
-          return _parseSubscriptionConfig(decoded[0]);
-        }
-      }
-    } catch (e) {
-      // Not a direct JSON, try base64 decoding
-      try {
-        final decodedBase64 = _decodeBase64(configString);
-        final decoded = jsonDecode(decodedBase64);
-        if (decoded is Map<String, dynamic>) {
-          return _parseSubscriptionConfig(decoded);
-        } else if (decoded is List<dynamic>) {
-          if (decoded.isNotEmpty && decoded[0] is Map<String, dynamic>) {
-            return _parseSubscriptionConfig(decoded[0]);
-          }
-        }
-      } catch (e2) {
-        print("Could not parse as JSON or Base64: $e2");
-      }
-    }
-
-    // Attempt to parse as URI (e.g., vmess://, ss://)
-    // This part would require a more sophisticated URI parser
-    // For now, we'll just return null if it's not JSON or Base64
-    return null;
-  }
-
-  String _decodeBase64(String encoded) {
-    return utf8.decode(base64Url.decode(base64Url.normalize(encoded)));
-  }
-
-  Future<int> testProfileLatency(VPNConfig config) async {
-    return await SpeedTestService.testLatency(config.server, config.port);
-  }
-
-  Future<double> testProfileDownloadSpeed(VPNConfig config) async {
-    // For a real speed test, you'd need a dedicated test file on the VPN server.
-    // For now, we'll use a placeholder URL.
-    final testUrl = 'http://${config.server}:${config.port}/testfile_10mb.bin'; // Placeholder
-    return await SpeedTestService.testDownloadSpeed(testUrl);
-  }
-
-  String _generateId() {
-    final random = Random();
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    return List.generate(16, (index) => chars[random.nextInt(chars.length)]).join();
-  }
-
-  void dispose() {
-    _profilesController.close();
-    _subscriptionsController.close();
   }
 }
-import 'package:kensei_tunnel/services/speed_test_service.dart';
 

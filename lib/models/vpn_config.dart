@@ -21,6 +21,14 @@ class VPNConfig {
   final Map<String, dynamic> config;
   final DateTime createdAt;
   final DateTime? lastConnected;
+  final bool isActive;
+  final bool killSwitchEnabled;
+  final bool alwaysOnEnabled;
+  final bool splitTunnelingEnabled;
+  final List<String> splitTunnelingApps;
+  final int latencyMs;
+  final double uploadSpeedKbps;
+  final double downloadSpeedKbps;
 
   VPNConfig({
     required this.id,
@@ -36,6 +44,9 @@ class VPNConfig {
     this.alwaysOnEnabled = false,
     this.splitTunnelingEnabled = false,
     this.splitTunnelingApps = const [],
+    this.latencyMs = 0,
+    this.uploadSpeedKbps = 0.0,
+    this.downloadSpeedKbps = 0.0,
   });
 
   factory VPNConfig.fromJson(Map<String, dynamic> json) {
@@ -57,6 +68,9 @@ class VPNConfig {
       alwaysOnEnabled: json["alwaysOnEnabled"] ?? false,
       splitTunnelingEnabled: json["splitTunnelingEnabled"] ?? false,
       splitTunnelingApps: List<String>.from(json["splitTunnelingApps"] ?? []),
+      latencyMs: json["latencyMs"] ?? 0,
+      uploadSpeedKbps: json["uploadSpeedKbps"] ?? 0.0,
+      downloadSpeedKbps: json["downloadSpeedKbps"] ?? 0.0,
     );
   }
 
@@ -75,6 +89,9 @@ class VPNConfig {
       'alwaysOnEnabled': alwaysOnEnabled,
       'splitTunnelingEnabled': splitTunnelingEnabled,
       'splitTunnelingApps': splitTunnelingApps,
+      'latencyMs': latencyMs,
+      'uploadSpeedKbps': uploadSpeedKbps,
+      'downloadSpeedKbps': downloadSpeedKbps,
     };
   }
 
@@ -474,4 +491,5 @@ class Subscription {
     };
   }
 }
+
 

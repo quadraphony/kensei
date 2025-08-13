@@ -839,3 +839,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+
+
+  void _showAboutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("About Kensei Tunnel"),
+        content: const Text("Kensei Tunnel is a secure and private VPN application."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Close"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
+}
+
+
+

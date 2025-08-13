@@ -20,7 +20,7 @@ dependencies:
   # Networking and HTTP
   http: ^1.1.2
   dio: ^5.4.0
-  connectivity_plus: ^5.0.2
+  connectivity_plus: ^6.1.5
   
   # Database and Storage
   sqflite: ^2.3.0
@@ -29,7 +29,7 @@ dependencies:
   
   # Cryptography and Security
   crypto: ^3.0.3
-  pointycastle: ^3.7.3
+  pointycastle: ^4.0.0
   
   # FFI and Native Integration
   ffi: ^2.1.0
@@ -39,13 +39,13 @@ dependencies:
   
   # Utilities
   uuid: ^4.2.1
-  intl: ^0.19.0
+  intl: ^0.20.2
   path: ^1.8.3
   
   # Platform Integration
-  permission_handler: ^11.1.0
-  device_info_plus: ^9.1.1
-  package_info_plus: ^4.2.0
+  permission_handler: ^12.0.1
+  device_info_plus: ^11.5.0
+  package_info_plus: ^8.3.1
   
   # File Operations
   file_picker: ^10.3.1
@@ -54,7 +54,7 @@ dependencies:
   logger: ^2.0.2+1
   
   # Charts and Visualization
-  fl_chart: ^0.65.0
+  fl_chart: ^1.0.0
   
   # QR Code
   qr_flutter: ^4.1.0
@@ -67,7 +67,7 @@ dev_dependencies:
     sdk: flutter
   
   # Linting
-  flutter_lints: ^3.0.1
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

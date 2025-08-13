@@ -33,7 +33,7 @@ class EncryptionService {
     return {
       'ciphertext': base64.encode(ciphertext),
       'iv': base64.encode(iv),
-      'tag': base64.encode(cipher.mac),
+      'tag': base64.encode(cipher.mac ?? Uint8List(0)), // Handle potential null mac
       'algorithm': 'AES-256-GCM',
     };
   }
@@ -252,7 +252,7 @@ class EncryptionService {
     };
     
     final encoded = base64.encode(utf8.encode(jsonEncode(keyData)));
-    return '-----BEGIN PUBLIC KEY-----\n$encoded\n-----END PUBLIC KEY-----';
+    return '-----BEGIN PUBLIC KEY-----\n$encoded\n-----END PUBLIC KEY-----\n';
   }
 
   String _encodeRSAPrivateKey(RSAPrivateKey privateKey) {
@@ -269,7 +269,7 @@ class EncryptionService {
     };
     
     final encoded = base64.encode(utf8.encode(jsonEncode(keyData)));
-    return '-----BEGIN PRIVATE KEY-----\n$encoded\n-----END PRIVATE KEY-----';
+    return '-----BEGIN PRIVATE KEY-----\n$encoded\n-----END PRIVATE KEY-----\n';
   }
 
   RSAPublicKey _decodeRSAPublicKey(String pem) {
@@ -360,7 +360,7 @@ class EncryptionService {
       result['suggestions'].add('Include numbers');
     }
 
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+    if (password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>_]'))) {
       result['score'] = (result['score'] as int) + 1;
     } else {
       result['suggestions'].add('Include special characters');
@@ -479,4 +479,5 @@ class ChaCha20Poly1305 {
     return decrypted;
   }
 }
+
 
