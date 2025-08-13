@@ -351,8 +351,8 @@ class ProfileService {
     required int port,
     required String method,
     required String password,
-    String plugin = ",
-    String pluginOpts = ",
+    String plugin = "",
+    String pluginOpts = "",
     bool killSwitchEnabled = false,
     bool alwaysOnEnabled = false,
     bool splitTunnelingEnabled = false,
@@ -364,7 +364,6 @@ class ProfileService {
       plugin: plugin,
       pluginOpts: pluginOpts,
     );
-
     return await addProfile(
       name: name,
       protocol: VPNProtocol.shadowsocks,
@@ -418,7 +417,7 @@ class ProfileService {
     required String auth,
     required String alpn,
     required String sni,
-    String obfs = ",
+    String obfs = "",
     bool killSwitchEnabled = false,
     bool alwaysOnEnabled = false,
     bool splitTunnelingEnabled = false,
@@ -441,7 +440,7 @@ class ProfileService {
       alwaysOnEnabled: alwaysOnEnabled,
       splitTunnelingEnabled: splitTunnelingEnabled,
       splitTunnelingApps: splitTunnelingApps,
-    );;
+    );
   }
 
   Future<void> _loadProfiles() async {
@@ -500,22 +499,64 @@ class ProfileService {
   Future<File> _getSubscriptionsFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/kensei_tunnel_subscriptions.json');
+
+  VPNConfig? _parseSubscriptionConfig(Map<String, dynamic> configData) {
+    try {
+      final type = configData["type"] as String?;
+      if (type == null) return null;
+
+      VPNProtocol? protocol;
+      switch (type.toLowerCase()) {
+        case "vmess":
+          protocol = VPNProtocol.vmess;
+          break;
+        case "trojan":
+          protocol = VPNProtocol.trojan;
+          break;
+        case "vless":
+          protocol = VPNProtocol.vless;
+          break;
+        case "shadowsocks":
+          protocol = VPNProtocol.shadowsocks;
+          break;
+        case "wireguard":
+          protocol = VPNProtocol.wireguard;
+          break;
+        case "tuic":
+          protocol = VPNProtocol.tuic;
+          break;
+        case "hysteria":
+          protocol = VPNProtocol.hysteria;
+          break;
+        default:
+          return null;
+      }
+
+      final server = configData["server"] as String?;
+      final port = configData["server_port"];
+      final tag = configData["tag"] as String? ?? "Unknown";
+
+      if (server == null || port == null) return null;
+
+      final portInt = port is String ? int.tryParse(port) : port as int?;
+      if (portInt == null) return null;
+
+      return VPNConfig(
+        id: _generateId(),
+        name: tag,
+        protocol: protocol,
+        server: server,
+        port: portInt,
+        config: configData,
+        createdAt: DateTime.now(),
+      );
+    } catch (e) {
+      print("Error parsing config: $e");
+      return null;
+    }
   }
 
-  String _generateId() {
-    final random = Random();
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    return List.generate(16, (index) => chars[random.nextInt(chars.length)]).join();
-  }
-
-  void dispose() {
-    _profilesController.close();
-    _subscriptionsController.close();
-  }
-}
-
-
-
+  // Helper for parsing config strings (e.g., from QR codes or clipboard)
   VPNConfig? parseConfigString(String configString) {
     try {
       // Attempt to decode as JSON first
@@ -551,22 +592,13 @@ class ProfileService {
     return null;
   }
 
-
-
-
   String _decodeBase64(String encoded) {
     return utf8.decode(base64Url.decode(base64Url.normalize(encoded)));
   }
 
-
-
-
   Future<int> testProfileLatency(VPNConfig config) async {
     return await SpeedTestService.testLatency(config.server, config.port);
   }
-
-
-
 
   Future<double> testProfileDownloadSpeed(VPNConfig config) async {
     // For a real speed test, you'd need a dedicated test file on the VPN server.
@@ -575,4 +607,16 @@ class ProfileService {
     return await SpeedTestService.testDownloadSpeed(testUrl);
   }
 
+  String _generateId() {
+    final random = Random();
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return List.generate(16, (index) => chars[random.nextInt(chars.length)]).join();
+  }
+
+  void dispose() {
+    _profilesController.close();
+    _subscriptionsController.close();
+  }
+}
+import 'package:kensei_tunnel/services/speed_test_service.dart';
 

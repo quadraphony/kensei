@@ -266,10 +266,10 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         _duplicateProfile(profile);
         break;
       case 'share':
-        _shareProfile(profile);
+        _shareProfile(profile, context);
         break;
       case 'test_latency':
-        _testLatency(profile);
+        _testLatency(profile, context);
         break;
       case 'delete':
         _deleteProfile(profile);
@@ -467,7 +467,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 
 
 
-  void _shareProfile(VPNConfig profile) {
+  void _shareProfile(VPNConfig profile, BuildContext context) {
     // For now, we'll just show a snackbar with the profile's JSON string.
     // In a real app, you'd generate a shareable link or QR code.
     final profileJson = profile.toJson();
@@ -476,10 +476,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     );
   }
 
-
-
-
-  void _testLatency(VPNConfig profile) async {
+  void _testLatency(VPNConfig profile, BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Testing latency for ${profile.name}...")),
     );

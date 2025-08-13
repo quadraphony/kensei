@@ -21,11 +21,6 @@ class VPNConfig {
   final Map<String, dynamic> config;
   final DateTime createdAt;
   final DateTime? lastConnected;
-  final bool isActive;
-  final bool killSwitchEnabled;
-  final bool alwaysOnEnabled;
-  final bool splitTunnelingEnabled;
-  final List<String> splitTunnelingApps;
 
   VPNConfig({
     required this.id,
@@ -37,6 +32,10 @@ class VPNConfig {
     required this.createdAt,
     this.lastConnected,
     this.isActive = false,
+    this.killSwitchEnabled = false,
+    this.alwaysOnEnabled = false,
+    this.splitTunnelingEnabled = false,
+    this.splitTunnelingApps = const [],
   });
 
   factory VPNConfig.fromJson(Map<String, dynamic> json) {

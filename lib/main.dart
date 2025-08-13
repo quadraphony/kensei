@@ -10,7 +10,7 @@ void main() async {
   // Initialize services
   await ProfileService().initialize();
   final themeService = ThemeService();
-  await themeService.initialize();
+
   
   runApp(
     ChangeNotifierProvider<ThemeService>(

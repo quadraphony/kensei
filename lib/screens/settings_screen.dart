@@ -817,16 +817,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Terms of Service'),
+        title: const Text("Terms of Service"),
         content: const SingleChildScrollView(
           child: Text(
-            'Kensei Tunnel Terms of Service\n\n'
-            '1. Acceptance of Terms\n'
-            'By accessing or using the Kensei Tunnel application, you agree to be bound by these Terms of Service.\n\n'
-            '2. Use of Service\n'
-            'You agree to use the application only for lawful purposes and in accordance with these Terms. You are responsible for maintaining the confidentiality of your account and password.\n\n'
-            '3. Prohibited Activities\n'
-            'You may not use the application for any illegal or unauthorized purpose, including but not limited to: infringing intellectual property rights, transmitting malware, or engaging in any activity that disrupts the service.\n\n'
-            '4. Disclaimer of Warranties\n'
-            'The application is provided on an 
-
+            "Kensei Tunnel Terms of Service\n\n"
+            "1. Acceptance of Terms\n"
+            "By accessing or using the Kensei Tunnel application, you agree to be bound by these Terms of Service.\n\n"
+            "2. Use of Service\n"
+            "You agree to use the application only for lawful purposes and in accordance with these Terms. You are responsible for maintaining the confidentiality of your account and password.\n\n"
+            "3. Prohibited Activities\n"
+            "You may not use the application for any illegal or unauthorized purpose, including but not limited to: infringing intellectual property rights, transmitting malware, or engaging in any activity that disrupts the service.\n\n"
+            "4. Disclaimer of Warranties\n"
+            "The application is provided on an \"as is\" and \"as available\" basis. Kensei Tunnel makes no warranties, express or implied, regarding the service.",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Close"),
+          ),
+        ],
+      ),
+    );

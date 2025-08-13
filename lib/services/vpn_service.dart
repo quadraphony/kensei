@@ -437,9 +437,6 @@ class VPNService {
     _statsTimer?.cancel();
     _reconnectTimer?.cancel();
   }
-}
-
-
 
   void _startReconnectTimer() {
     _reconnectTimer?.cancel();
@@ -455,5 +452,4 @@ class VPNService {
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
   }
-
-
+}

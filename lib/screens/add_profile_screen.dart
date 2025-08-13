@@ -1162,7 +1162,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
               final config = WireGuardConfig.fromJson(parsedConfig.config);
               _wgPrivateKeyController.text = config.privateKey;
               _wgPeerPublicKeyController.text = config.peerPublicKey;
-              _wgLocalAddressController.text = config.localAddress.join(\", \");
+              _wgLocalAddressController.text = config.localAddress.join(", ");
               _wgMtuController.text = config.mtu.toString();
               break;
             case VPNProtocol.tuic:
