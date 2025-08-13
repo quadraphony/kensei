@@ -39,6 +39,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSecuritySection(),
           const SizedBox(height: 24),
           _buildAboutSection(),
+          const SizedBox(height: 24),
+          _buildAppearanceSection(),
         ],
       ),
     );
@@ -664,4 +666,167 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 }
+
+
+
+  Widget _buildAppearanceSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.palette,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Appearance',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              title: const Text('Theme Mode'),
+              subtitle: Text(Theme.of(context).brightness == Brightness.dark ? 'Dark' : 'Light'), // Placeholder
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                _showThemeModeSelectionDialog();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showThemeModeSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Theme Mode'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemeMode>(
+              title: const Text('System Default'),
+              value: ThemeMode.system,
+              groupValue: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light, // This needs to be dynamic
+              onChanged: (value) {
+                // This will be handled by a state management solution
+                Navigator.of(context).pop();
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Light'),
+              value: ThemeMode.light,
+              groupValue: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light, // This needs to be dynamic
+              onChanged: (value) {
+                // This will be handled by a state management solution
+                Navigator.of(context).pop();
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Dark'),
+              value: ThemeMode.dark,
+              groupValue: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light, // This needs to be dynamic
+              onChanged: (value) {
+                // This will be handled by a state management solution
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  void _handleSubscriptionAction(String action, Subscription subscription) async {
+    switch (action) {
+      case 'update':
+        await _profileService.updateSubscription(subscription.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Subscription updated')),
+          );
+        }
+        break;
+      case 'delete':
+        await _profileService.deleteSubscription(subscription.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Subscription deleted')),
+          );
+        }
+        break;
+    }
+  }
+
+  void _showAboutDialog() {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Kensei Tunnel',
+      applicationVersion: '1.0.0',
+      applicationLegalese: '© 2023 Kensei Tunnel. All rights reserved.',
+      children: [
+        const Text('Kensei Tunnel is a secure and fast VPN client.'),
+      ],
+    );
+  }
+
+  void _showPrivacyPolicy() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Privacy Policy'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'Kensei Tunnel Privacy Policy\n\n'
+            '1. Data Collection\n'
+            'We do not collect, store, or transmit any personal data or browsing activity. All VPN configurations and logs are stored locally on your device.\n\n'
+            '2. No Logging Policy\n'
+            'We maintain a strict no-logging policy. No connection logs, activity logs, or DNS queries are stored on our servers or your device.\n\n'
+            '3. Data Security\n'
+            'All data stored locally on your device is encrypted. We use industry-standard encryption protocols to protect your VPN traffic.\n\n'
+            '4. Third-Party Services\n'
+            'Our application may use third-party services for analytics or crash reporting. These services do not collect personally identifiable information.\n\n'
+            '5. Changes to this Policy\n'
+            'We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.\n\n'
+            'By using Kensei Tunnel, you agree to the terms of this Privacy Policy.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTermsOfService() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Terms of Service'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'Kensei Tunnel Terms of Service\n\n'
+            '1. Acceptance of Terms\n'
+            'By accessing or using the Kensei Tunnel application, you agree to be bound by these Terms of Service.\n\n'
+            '2. Use of Service\n'
+            'You agree to use the application only for lawful purposes and in accordance with these Terms. You are responsible for maintaining the confidentiality of your account and password.\n\n'
+            '3. Prohibited Activities\n'
+            'You may not use the application for any illegal or unauthorized purpose, including but not limited to: infringing intellectual property rights, transmitting malware, or engaging in any activity that disrupts the service.\n\n'
+            '4. Disclaimer of Warranties\n'
+            'The application is provided on an 
 

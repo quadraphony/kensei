@@ -24,6 +24,8 @@ class VPNConfig {
   final bool isActive;
   final bool killSwitchEnabled;
   final bool alwaysOnEnabled;
+  final bool splitTunnelingEnabled;
+  final List<String> splitTunnelingApps;
 
   VPNConfig({
     required this.id,
@@ -54,6 +56,8 @@ class VPNConfig {
       isActive: json["isActive"] ?? false,
       killSwitchEnabled: json["killSwitchEnabled"] ?? false,
       alwaysOnEnabled: json["alwaysOnEnabled"] ?? false,
+      splitTunnelingEnabled: json["splitTunnelingEnabled"] ?? false,
+      splitTunnelingApps: List<String>.from(json["splitTunnelingApps"] ?? []),
     );
   }
 
@@ -70,6 +74,8 @@ class VPNConfig {
       'isActive': isActive,
       'killSwitchEnabled': killSwitchEnabled,
       'alwaysOnEnabled': alwaysOnEnabled,
+      'splitTunnelingEnabled': splitTunnelingEnabled,
+      'splitTunnelingApps': splitTunnelingApps,
     };
   }
 
@@ -85,6 +91,11 @@ class VPNConfig {
     bool? isActive,
     bool? killSwitchEnabled,
     bool? alwaysOnEnabled,
+    bool? splitTunnelingEnabled,
+    List<String>? splitTunnelingApps,
+    int? latencyMs,
+    double? uploadSpeedKbps,
+    double? downloadSpeedKbps,
   }) {
     return VPNConfig(
       id: id ?? this.id,
@@ -98,6 +109,11 @@ class VPNConfig {
       isActive: isActive ?? this.isActive,
       killSwitchEnabled: killSwitchEnabled ?? this.killSwitchEnabled,
       alwaysOnEnabled: alwaysOnEnabled ?? this.alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled ?? this.splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps ?? this.splitTunnelingApps,
+      latencyMs: latencyMs ?? this.latencyMs,
+      uploadSpeedKbps: uploadSpeedKbps ?? this.uploadSpeedKbps,
+      downloadSpeedKbps: downloadSpeedKbps ?? this.downloadSpeedKbps,
     );
   }
 
@@ -388,12 +404,18 @@ class ConnectionStats {
   final int downloadBytes;
   final Duration connectionTime;
   final String status;
+  final int latencyMs; // New field for latency in milliseconds
+  final double uploadSpeedKbps; // New field for upload speed in KBps
+  final double downloadSpeedKbps; // New field for download speed in KBps
 
   ConnectionStats({
     required this.uploadBytes,
     required this.downloadBytes,
     required this.connectionTime,
     required this.status,
+    this.latencyMs = 0,
+    this.uploadSpeedKbps = 0.0,
+    this.downloadSpeedKbps = 0.0,
   });
 
   String get uploadFormatted => _formatBytes(uploadBytes);

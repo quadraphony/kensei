@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'services/profile_service.dart';
+import 'package:provider/provider.dart';
+import 'services/theme_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize services
   await ProfileService().initialize();
+  final themeService = ThemeService();
+  await themeService.initialize();
   
-  runApp(const KenseiTunnelApp());
+  runApp(
+    ChangeNotifierProvider<ThemeService>(
+      create: (context) => themeService,
+      child: const KenseiTunnelApp(),
+    ),
+  );
 }
 
 class KenseiTunnelApp extends StatelessWidget {
@@ -40,7 +49,7 @@ class KenseiTunnelApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      themeMode: ThemeMode.system,
+      themeMode: Provider.of<ThemeService>(context).themeMode,
       home: const HomeScreen(),
       debugShowCheckedModeBanner: false,
     );

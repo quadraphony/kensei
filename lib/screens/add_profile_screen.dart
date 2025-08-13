@@ -71,6 +71,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   final _hysteriaSniController = TextEditingController();
   final _hysteriaObfsController = TextEditingController();
 
+  bool _killSwitchEnabled = false;
+  bool _alwaysOnEnabled = false;
+  bool _splitTunnelingEnabled = false;
+  List<String> _splitTunnelingApps = [];
+
   @override
   void initState() {
     super.initState();
@@ -265,6 +270,70 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             
             // Protocol-specific configuration
             _buildProtocolConfiguration(),
+
+            const SizedBox(height: 16),
+
+            // Advanced Settings
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Advanced Settings',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    SwitchListTile(
+                      title: const Text('Kill Switch'),
+                      subtitle: const Text('Block all internet traffic if VPN connection drops.'),
+                      value: _killSwitchEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _killSwitchEnabled = value;
+                        });
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const Text("Always-on VPN"),
+                      subtitle: const Text("Automatically reconnect VPN if disconnected."),
+                      value: _alwaysOnEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _alwaysOnEnabled = value;
+                        });
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const Text("Split Tunneling"),
+                      subtitle: const Text("Select which apps use the VPN."),
+                      value: _splitTunnelingEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _splitTunnelingEnabled = value;
+                        });
+                      },
+                    ),
+                    if (_splitTunnelingEnabled)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
+                        child: TextFormField(
+                          controller: TextEditingController(text: _splitTunnelingApps.join(", ")),
+                          decoration: const InputDecoration(
+                            labelText: "Apps to bypass VPN (comma-separated)",
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _splitTunnelingApps = value.split(", ").map((e) => e.trim()).toList();
+                            });
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -868,6 +937,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             host: _vmessHostController.text,
             tls: _vmessTls,
             sni: _vmessSniController.text,
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         case VPNProtocol.trojan:
@@ -880,6 +953,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             network: _trojanNetworkController.text,
             path: _trojanPathController.text,
             host: _trojanHostController.text,
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         case VPNProtocol.vless:
@@ -894,6 +971,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             network: _vlessNetworkController.text,
             path: _vlessPathController.text,
             host: _vlessHostController.text,
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         case VPNProtocol.shadowsocks:
@@ -905,6 +986,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             password: _ssPasswordController.text,
             plugin: _ssPluginController.text,
             pluginOpts: _ssPluginOptsController.text,
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         case VPNProtocol.wireguard:
@@ -916,6 +1001,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             peerPublicKey: _wgPeerPublicKeyController.text,
             localAddress: _wgLocalAddressController.text.split(',').map((e) => e.trim()).toList(),
             mtu: int.parse(_wgMtuController.text),
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         case VPNProtocol.tuic:
@@ -927,6 +1016,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             password: _tuicPasswordController.text,
             alpn: _tuicAlpnController.text,
             sni: _tuicSniController.text,
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         case VPNProtocol.hysteria:
@@ -938,6 +1031,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
             alpn: _hysteriaAlpnController.text,
             sni: _hysteriaSniController.text,
             obfs: _hysteriaObfsController.text,
+            killSwitchEnabled: _killSwitchEnabled,
+            alwaysOnEnabled: _alwaysOnEnabled,
+            splitTunnelingEnabled: _splitTunnelingEnabled,
+            splitTunnelingApps: _splitTunnelingApps,
           );
           break;
         default:

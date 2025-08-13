@@ -185,6 +185,16 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
               ),
             ),
             const PopupMenuItem(
+              value: 'test_latency',
+              child: Row(
+                children: [
+                  Icon(Icons.network_check),
+                  SizedBox(width: 8),
+                  Text('Test Latency'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
               value: 'delete',
               child: Row(
                 children: [
@@ -257,6 +267,9 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
         break;
       case 'share':
         _shareProfile(profile);
+        break;
+      case 'test_latency':
+        _testLatency(profile);
         break;
       case 'delete':
         _deleteProfile(profile);
@@ -461,6 +474,21 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Share this profile: ${profileJson.toString()}')),
     );
+  }
+
+
+
+
+  void _testLatency(VPNConfig profile) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Testing latency for ${profile.name}...")),
+    );
+    final latency = await _profileService.testProfileLatency(profile);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Latency for ${profile.name}: ${latency}ms")),
+      );
+    }
   }
 
 

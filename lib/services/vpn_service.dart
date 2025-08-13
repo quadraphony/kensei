@@ -137,21 +137,32 @@ class VPNService {
 
   void _updateStats() {
     if (_connectionStartTime == null) return;
-    
-    // Simulate traffic stats (in a real implementation, this would come from the VPN core)
-    final random = Random();
-    _uploadBytes += random.nextInt(1024);
-    _downloadBytes += random.nextInt(2048);
-    
-    final connectionTime = DateTime.now().difference(_connectionStartTime!);
-    final stats = ConnectionStats(
-      uploadBytes: _uploadBytes,
-      downloadBytes: _downloadBytes,
-      connectionTime: connectionTime,
-      status: _connectionState.toString().split('.').last,
-    );
-    
-    _statsController.add(stats);
+
+    try {
+      final statusJson = SingBoxBindings.getConnectionStatus();
+      final Map<String, dynamic> status = jsonDecode(statusJson);
+
+      _uploadBytes = status["upload_bytes"] ?? _uploadBytes;
+      _downloadBytes = status["download_bytes"] ?? _downloadBytes;
+      final latency = status["latency_ms"] ?? 0;
+      final uploadSpeed = status["upload_speed_kbps"] ?? 0.0;
+      final downloadSpeed = status["download_speed_kbps"] ?? 0.0;
+
+      final connectionTime = DateTime.now().difference(_connectionStartTime!);
+      final stats = ConnectionStats(
+        uploadBytes: _uploadBytes,
+        downloadBytes: _downloadBytes,
+        connectionTime: connectionTime,
+        status: _connectionState.toString().split(".").last,
+        latencyMs: latency,
+        uploadSpeedKbps: uploadSpeed,
+        downloadSpeedKbps: downloadSpeed,
+      );
+
+      _statsController.add(stats);
+    } catch (e) {
+      _log("Error updating stats: $e");
+    }
   }
 
   Future<Map<String, dynamic>> _generateSingBoxConfig(VPNConfig config) async {
@@ -226,7 +237,22 @@ class VPNService {
           {
             "geoip": "cn",
             "outbound": "direct"
-          }
+          },
+          if (config.splitTunnelingEnabled) ...[
+            {
+              "rule_set": "geosite-bypass",
+              "outbound": "direct"
+            },
+            {
+              "rule_set": "geoip-bypass",
+              "outbound": "direct"
+            },
+            for (final app in config.splitTunnelingApps)
+              {
+                "process_name": app,
+                "outbound": "direct"
+              }
+          ]
         ],
         "auto_detect_interface": true
       }

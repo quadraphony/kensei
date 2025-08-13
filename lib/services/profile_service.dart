@@ -47,6 +47,10 @@ class ProfileService {
     required String server,
     required int port,
     required Map<String, dynamic> config,
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final id = _generateId();
     final profile = VPNConfig(
@@ -57,6 +61,11 @@ class ProfileService {
       port: port,
       config: config,
       createdAt: DateTime.now(),
+      isActive: false,
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
     );
 
     _profiles.add(profile);
@@ -233,6 +242,10 @@ class ProfileService {
     required String host,
     required bool tls,
     required String sni,
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final config = VMessConfig(
       uuid: uuid,
@@ -251,6 +264,10 @@ class ProfileService {
       server: server,
       port: port,
       config: config.toJson(),
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
     );
   }
 
@@ -263,6 +280,10 @@ class ProfileService {
     required String network,
     required String path,
     required String host,
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final config = TrojanConfig(
       password: password,
@@ -278,6 +299,10 @@ class ProfileService {
       server: server,
       port: port,
       config: config.toJson(),
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
     );
   }
 
@@ -292,6 +317,10 @@ class ProfileService {
     required String network,
     required String path,
     required String host,
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final config = VLESSConfig(
       uuid: uuid,
@@ -309,6 +338,10 @@ class ProfileService {
       server: server,
       port: port,
       config: config.toJson(),
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
     );
   }
 
@@ -318,8 +351,12 @@ class ProfileService {
     required int port,
     required String method,
     required String password,
-    String plugin = '',
-    String pluginOpts = '',
+    String plugin = ",
+    String pluginOpts = ",
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final config = ShadowsocksConfig(
       method: method,
@@ -334,31 +371,10 @@ class ProfileService {
       server: server,
       port: port,
       config: config.toJson(),
-    );
-  }
-
-  Future<String> createWireGuardProfile({
-    required String name,
-    required String server,
-    required int port,
-    required String privateKey,
-    required String peerPublicKey,
-    required List<String> localAddress,
-    int mtu = 1420,
-  }) async {
-    final config = WireGuardConfig(
-      privateKey: privateKey,
-      peerPublicKey: peerPublicKey,
-      localAddress: localAddress,
-      mtu: mtu,
-    );
-
-    return await addProfile(
-      name: name,
-      protocol: VPNProtocol.wireguard,
-      server: server,
-      port: port,
-      config: config.toJson(),
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
     );
   }
 
@@ -370,6 +386,10 @@ class ProfileService {
     required String password,
     required String alpn,
     required String sni,
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final config = TUICConfig(
       uuid: uuid,
@@ -384,6 +404,10 @@ class ProfileService {
       server: server,
       port: port,
       config: config.toJson(),
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
     );
   }
 
@@ -394,7 +418,11 @@ class ProfileService {
     required String auth,
     required String alpn,
     required String sni,
-    String obfs = '',
+    String obfs = ",
+    bool killSwitchEnabled = false,
+    bool alwaysOnEnabled = false,
+    bool splitTunnelingEnabled = false,
+    List<String> splitTunnelingApps = const [],
   }) async {
     final config = HysteriaConfig(
       auth: auth,
@@ -409,7 +437,11 @@ class ProfileService {
       server: server,
       port: port,
       config: config.toJson(),
-    );
+      killSwitchEnabled: killSwitchEnabled,
+      alwaysOnEnabled: alwaysOnEnabled,
+      splitTunnelingEnabled: splitTunnelingEnabled,
+      splitTunnelingApps: splitTunnelingApps,
+    );;
   }
 
   Future<void> _loadProfiles() async {
@@ -524,6 +556,23 @@ class ProfileService {
 
   String _decodeBase64(String encoded) {
     return utf8.decode(base64Url.decode(base64Url.normalize(encoded)));
+  }
+
+
+
+
+  Future<int> testProfileLatency(VPNConfig config) async {
+    return await SpeedTestService.testLatency(config.server, config.port);
+  }
+
+
+
+
+  Future<double> testProfileDownloadSpeed(VPNConfig config) async {
+    // For a real speed test, you'd need a dedicated test file on the VPN server.
+    // For now, we'll use a placeholder URL.
+    final testUrl = 'http://${config.server}:${config.port}/testfile_10mb.bin'; // Placeholder
+    return await SpeedTestService.testDownloadSpeed(testUrl);
   }
 
 
